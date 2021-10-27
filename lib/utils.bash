@@ -65,6 +65,7 @@ download_release() {
   url="$GH_REPO/releases/download/v${version}/dockle_${version}_${platform}-${architecture}.tar.gz"
 
   echo "* Downloading $TOOL_NAME release $version..."
+  echo "* $url"
   curl "${curl_opts[@]}" -o "$filename" -C - "$url" || fail "Could not download $url"
   if [ -f "$filename" ]; then
     echo "* Downloaded $filename"
