@@ -84,17 +84,16 @@ install_version() {
   fi
 
   (
+    local tool_cmd
+    tool_cmd="$(echo "$TOOL_TEST" | cut -d' ' -f1)"
     mkdir -p "$install_path"
-    cp -r "$ASDF_DOWNLOAD_PATH/dockle" "$install_path"
-    if [ -f "$install_path/dockle" ]; then
+    cp -r "$ASDF_DOWNLOAD_PATH/$tool_cmd" "$install_path"
+    if [ -f "$install_path/$tool_cmd" ]; then
       echo "* Installed $TOOL_NAME $version to $install_path"
     else
       fail "Could not install $TOOL_NAME $version to $install_path"
     fi
-    chmod +x "$install_path/dockle"
-    # TODO: Asert dockle executable exists.
-    local tool_cmd
-    tool_cmd="$(echo "$TOOL_TEST" | cut -d' ' -f1)"
+    chmod +x "$install_path/$tool_cmd"
     test -x "$install_path/$tool_cmd" || fail "Expected $install_path/$tool_cmd to be executable."
 
     echo "$TOOL_NAME $version installation was successful!"
