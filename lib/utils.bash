@@ -2,7 +2,6 @@
 
 set -euo pipefail
 
-# TODO: Ensure this is the correct GitHub homepage where releases can be downloaded for dockle.
 GH_REPO="https://github.com/goodwithtech/dockle"
 TOOL_NAME="dockle"
 TOOL_TEST="dockle --version"
@@ -14,7 +13,6 @@ fail() {
 
 curl_opts=(-fsSL)
 
-# NOTE: You might want to remove this if dockle is not hosted on GitHub releases.
 if [ -n "${GITHUB_API_TOKEN:-}" ]; then
   curl_opts=("${curl_opts[@]}" -H "Authorization: token $GITHUB_API_TOKEN")
 fi
@@ -27,22 +25,44 @@ sort_versions() {
 list_github_tags() {
   git ls-remote --tags --refs "$GH_REPO" |
     grep -o 'refs/tags/.*' | cut -d/ -f3- |
-    sed 's/^v//' # NOTE: You might want to adapt this sed to remove non-version strings from tags
+    sed 's/^v//'
 }
 
 list_all_versions() {
-  # TODO: Adapt this. By default we simply list the tag names from GitHub releases.
-  # Change this function if dockle has other means of determining installable versions.
   list_github_tags
 }
 
+get_platform() {
+  local platform
+  platform=$(uname)
+  case $platform in
+    Darwin) platform="macOS";;
+    Linux) platform="Linux";;
+    Windows) platform="Windows";;
+  esac
+  echo "$platform"
+}
+
+get_system_architecture() {
+  local architechture
+  architechture=$(uname -m)
+  case $architechture in
+    armv*) architechture="ARM";;
+    aarch64) architechture="ARM64";;
+    x86) architechture="32bit";;
+    x86_64) architechture="64bit";;
+  esac
+  echo "$architechture"
+}
+
 download_release() {
-  local version filename url
+  local version platform architechture filename url
   version="$1"
+  platform="$(get_platform)"
+  architecture="$(get_system_architecture)"
   filename="$2"
 
-  # TODO: Adapt the release URL convention for dockle
-  url="$GH_REPO/archive/v${version}.tar.gz"
+  url="$GH_REPO/releases/download/v${version}/dockle_${version}_${platform}-${architecture}.tar.gz"
 
   echo "* Downloading $TOOL_NAME release $version..."
   curl "${curl_opts[@]}" -o "$filename" -C - "$url" || fail "Could not download $url"
@@ -59,8 +79,8 @@ install_version() {
 
   (
     mkdir -p "$install_path"
-    cp -r "$ASDF_DOWNLOAD_PATH"/* "$install_path"
-
+    cp -r "$ASDF_DOWNLOAD_PATH/dockle" "$install_path"
+    chmod +x "$install_path/dockle"
     # TODO: Asert dockle executable exists.
     local tool_cmd
     tool_cmd="$(echo "$TOOL_TEST" | cut -d' ' -f1)"
