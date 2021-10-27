@@ -66,12 +66,17 @@ download_release() {
 
   echo "* Downloading $TOOL_NAME release $version..."
   curl "${curl_opts[@]}" -o "$filename" -C - "$url" || fail "Could not download $url"
+  if [ -f "$filename" ]; then
+    echo "* Downloaded $filename"
+  else
+    fail "Could not download $filename from $url"
+  fi
 }
 
 install_version() {
   local install_type="$1"
   local version="$2"
-  local install_path="$3"
+  local install_path="$3/bin"
 
   if [ "$install_type" != "version" ]; then
     fail "asdf-$TOOL_NAME supports release installs only"
