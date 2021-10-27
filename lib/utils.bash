@@ -36,9 +36,9 @@ get_platform() {
   local platform
   platform=$(uname)
   case $platform in
-    Darwin) platform="macOS";;
-    Linux) platform="Linux";;
-    Windows) platform="Windows";;
+  Darwin) platform="macOS" ;;
+  Linux) platform="Linux" ;;
+  Windows) platform="Windows" ;;
   esac
   echo "$platform"
 }
@@ -47,10 +47,10 @@ get_system_architecture() {
   local architechture
   architechture=$(uname -m)
   case $architechture in
-    armv*) architechture="ARM";;
-    aarch64) architechture="ARM64";;
-    x86) architechture="32bit";;
-    x86_64) architechture="64bit";;
+  armv*) architechture="ARM" ;;
+  aarch64) architechture="ARM64" ;;
+  x86) architechture="32bit" ;;
+  x86_64) architechture="64bit" ;;
   esac
   echo "$architechture"
 }
